@@ -29,50 +29,6 @@
     overflow-x: hidden;
   }
 
-  /* ══ STICKY SIDE TAB ══ */
-  .sticky-cta {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 9999;
-  }
-  .sticky-cta a {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-    background: linear-gradient(180deg, #d4693f 0%, #c0522a 100%);
-    color: white;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 24px 13px;
-    border-radius: 8px 0 0 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: -3px 0 18px rgba(192,82,42,0.28), inset 0 1px 0 rgba(255,255,255,0.22);
-    transition: all 0.3s;
-    animation: sideGlow 3s ease-in-out infinite;
-    position: relative;
-    overflow: hidden;
-  }
-  .sticky-cta a::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 38%; height: 100%;
-    background: linear-gradient(to left, rgba(255,255,255,0.12), transparent);
-    pointer-events: none;
-  }
-  .sticky-cta a:hover { padding-right: 18px; box-shadow: -6px 0 28px rgba(192,82,42,0.48); }
-  @keyframes sideGlow {
-    0%,100% { box-shadow: -3px 0 18px rgba(192,82,42,0.28); }
-    50%      { box-shadow: -5px 0 26px rgba(192,82,42,0.46); }
-  }
-
   /* ══ HEADER ══ */
   .site-header {
     background: white;
@@ -116,7 +72,71 @@
     white-space: nowrap;
   }
   .nav-tab:hover { color: var(--charcoal); }
-  .nav-tab.active { color: var(--rust); border-bottom-color: var(--rust); }
+  .nav-tabs { display: none; }
+
+  /* Hamburger Toggle */
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--charcoal);
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s;
+  }
+  .menu-toggle:hover { color: var(--rust); transform: scale(1.1); }
+
+  /* Side Drawer */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .drawer-overlay.active { display: block; opacity: 1; }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0; right: -300px;
+    width: 280px; height: 100%;
+    background: var(--warm-white);
+    z-index: 1001;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 80px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .mobile-drawer.active { right: 0; }
+  .drawer-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: var(--slate-light);
+    cursor: pointer;
+  }
+  .drawer-item {
+    background: none;
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    text-align: left;
+    color: var(--charcoal);
+    padding: 12px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s;
+  }
+  .drawer-item.active { color: var(--rust); padding-left: 10px; }
 
   /* ══ PAGES ══ */
   .page { display: none; }
@@ -646,20 +666,6 @@
 
   /* ══ RESPONSIVE ══ */
   @media (max-width: 760px) {
-    .nav-tabs { 
-      display: flex; 
-      overflow-x: auto; 
-      -webkit-overflow-scrolling: touch; 
-      scrollbar-width: none;
-      scrollbar-color: transparent transparent;
-      padding-bottom: 2px;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
-    .nav-tab { 
-      padding: 0 14px; 
-      font-size: 11px; 
-      flex-shrink: 0;
-    }
     .inner { padding: 36px 18px; }
     .autor-grid, .libro-grid { grid-template-columns: 1fr; }
     .autor-photo { width: 180px; height: 225px; }
@@ -685,13 +691,6 @@
 </head>
 <body>
 
-<!-- ══ STICKY SIDE TAB ══ -->
-<div class="sticky-cta">
-  <a href="https://wa.me/34633127535?text=Hola%2C%20quiero%20un%20ejemplar%20firmado" target="_blank">
-    ✍ &nbsp;Consigue tu ejemplar firmado
-  </a>
-</div>
-
 <!-- ══ HEADER ══ -->
 <header class="site-header">
   <div class="site-logo">Luis Mi <span>Atienza</span></div>
@@ -701,7 +700,18 @@
     <button class="nav-tab" onclick="go('proyectos',this)">Futuros Proyectos</button>
     <button class="nav-tab" onclick="go('contacto',this)">Contacto</button>
   </nav>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 </header>
+
+<!-- Mobile Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <button class="drawer-close" onclick="toggleMenu()">&times;</button>
+  <button class="drawer-item active" onclick="go('autor',this)">El Autor</button>
+  <button class="drawer-item" onclick="go('libro',this)">El Libro</button>
+  <button class="drawer-item" onclick="go('proyectos',this)">Futuros Proyectos</button>
+  <button class="drawer-item" onclick="go('contacto',this)">Contacto</button>
+</div>
 
 <!-- ════════════ AUTOR ════════════ -->
 <div id="page-autor" class="page active">
@@ -1067,11 +1077,18 @@ function openApp(appUrl, webUrl) {
   }, 1200);
 }
 
+function toggleMenu() {
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  drawer.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+
 function go(id, btn) {
   // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  // Deactivate all tab buttons
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  // Deactivate all navigation buttons (desktop and mobile)
+  document.querySelectorAll('.nav-tab, .drawer-item').forEach(b => b.classList.remove('active'));
   
   // Show target page
   const targetPage = document.getElementById('page-' + id);
@@ -1079,9 +1096,17 @@ function go(id, btn) {
     targetPage.classList.add('active');
   }
   
-  // Activate clicked button
-  if (btn) {
-    btn.classList.add('active');
+  // Activate clicked button and its counterpart
+  // (if you click "Autor" in mobile, we also activate "Autor" in desktop for consistency)
+  const allRelatedButtons = document.querySelectorAll(`[onclick*="go('${id}'"]`);
+  allRelatedButtons.forEach(b => b.classList.add('active'));
+  
+  // Close mobile menu if it's open
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  if (drawer.classList.contains('active')) {
+    drawer.classList.remove('active');
+    overlay.classList.remove('active');
   }
   
   // Scroll to top
