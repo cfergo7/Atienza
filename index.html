@@ -6,6 +6,43 @@
 <title>Luis Mi Atienza — Escritor</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* Estilo especial para la pestaña de Noticias */
+  .nav-tab.news-tab, .drawer-item.news-tab {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .news-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--rust);
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 6px;
+    box-shadow: 0 0 8px var(--rust);
+    animation: pulse-red 2s infinite;
+  }
+  @keyframes pulse-red {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 82, 42, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(192, 82, 42, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 82, 42, 0); }
+  }
+
+  /* Contenedor de noticias */
+  .news-container {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+  .news-date {
+    font-size: 11px;
+    color: var(--rust);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
   :root {
     --cream: #f5f0eb;
     --warm-white: #fdfaf7;
@@ -651,6 +688,33 @@
     flex-shrink: 0;
   }
   .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.4); }
+<div id="page-noticias" class="page">
+  <div class="inner">
+    <div class="label-tag">Actualidad</div>
+    <h2 class="page-title">Últimas <em>Noticias</em></h2>
+    
+    <div class="news-container">
+      <div class="news-date">Próximo Evento · 30 de Abril</div>
+      <h3 class="proj-name" style="margin-top:10px;">Gran firma de libros en Talavera de la Reina</h3>
+      
+      <div style="margin: 25px 0; text-align: center;">
+        <img src="1775733603026.JPG" alt="Evento Luis Mi Atienza" 
+             style="width: 100%; max-width: 550px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border);">
+      </div>
+
+      <p class="proj-desc">
+        ¡Ya es oficial! Estaremos en la <strong>Feria del Libro de Talavera (Toledo)</strong>. 
+        Será una oportunidad única para conseguir tu ejemplar de <em>"Bajo el Peso del Alma"</em> dedicado y charlar en persona. 
+        ¡No faltéis a la cita el 30 de abril!
+      </p>
+      
+      <div style="margin-top: 20px;">
+        <a href="https://wa.me/34633127535?text=Hola%20Luis%20Mi%2C%20quer%C3%ADa%20m%C3%A1s%20info%20sobre%20la%20firma" target="_blank" class="btn-s" style="padding: 8px 15px; font-size: 11px;">MÁS INFORMACIÓN</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   /* ══ FOOTER ══ */
   footer {
@@ -695,6 +759,8 @@
 <header class="site-header">
   <div class="site-logo">Luis Mi <span>Atienza</span></div>
   <nav class="nav-tabs">
+<button class="nav-tab" onclick="go('noticias',this)" style="color:var(--gold); font-weight:700;">Últimas Noticias</button>
+
     <button class="nav-tab active" onclick="go('autor',this)">El Autor</button>
     <button class="nav-tab" onclick="go('libro',this)">El Libro</button>
     <button class="nav-tab" onclick="go('proyectos',this)">Futuros Proyectos</button>
@@ -706,6 +772,8 @@
 <!-- Mobile Drawer -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="mobile-drawer" id="mobile-drawer">
+
+<button class="drawer-item news-tab" onclick="go('noticias',this)">Últimas Noticias <span class="news-dot"></span></button>
   <button class="drawer-close" onclick="toggleMenu()">&times;</button>
   <button class="drawer-item active" onclick="go('autor',this)">El Autor</button>
   <button class="drawer-item" onclick="go('libro',this)">El Libro</button>
@@ -1064,8 +1132,67 @@ Atmósfera "Noir" pura: El peso de la culpa, la suciedad del destino y la búsqu
 
   </div>
 </div>
+<footer style="background: var(--charcoal); color: rgba(255,255,255,0.6); text-align: center; padding: 60px 20px 40px 20px; font-size: 13px; border-top: 4px solid var(--rust);">
+  
+  <div style="max-width: 700px; margin: 0 auto;">
+    <div class="label-tag" style="justify-content: center; margin-bottom: 15px; color: var(--gold);">
+      Próximo Evento · 30 de Abril
+    </div>
+    
+    <h2 class="page-title" style="color: white; margin-bottom: 15px; font-size: 1.8rem;">
+      Presentación y Firma en <em>Talavera de la Reina</em>
+    </h2>
 
+    <p style="line-height: 1.8; margin-bottom: 25px; color: rgba(255,255,255,0.5);">
+      Nos vemos el próximo <strong>30 de abril</strong> en la <strong>Feria del Libro de Talavera (Toledo)</strong>. Estaré firmando ejemplares de <em>"Bajo el Peso del Alma"</em> y compartiendo un rato con todos los lectores en mi ciudad natal.
+    </p>
 
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">📍 Feria del Libro (Talavera)</div>
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">🗓 30 de Abril</div>
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">✍ Firma de ejemplares</div>
+    </div>
+
+    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;">
+      <span class="footer-name">Luis Mi Atienza</span>
+      <div style="margin-bottom:15px;">
+        <a href="https://www.facebook.com/share/1CZ4DsZvGC/" target="_blank">Facebook</a>
+        <a href="https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh" target="_blank">Instagram</a>
+        <a href="https://wa.me/34633127535" target="_blank">WhatsApp</a>
+      </div>
+      <div style="font-size: 11px; opacity: 0.5;">© 2026 Luis Mi Atienza · Talavera de la Reina (Toledo)</div>
+    </div>
+  </div>
+</footer>
+<div id="page-noticias" class="page">
+  <div class="inner">
+    <div class="label-tag">Actualidad · Talavera</div>
+    <h2 class="page-title">Últimas <em>Noticias</em></h2>
+    <p class="page-lead">Sigue de cerca los eventos y novedades de <strong>Luis Mi Atienza</strong>.</p>
+
+    <div style="background: white; border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+      <div style="color: var(--rust); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;">Próxima Cita · 30 de Abril</div>
+      
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--charcoal); margin-bottom: 25px;">Feria del Libro en Talavera de la Reina</h3>
+
+      <div style="margin-bottom: 30px; text-align: center;">
+        <img src="1775733603026.JPG" alt="Evento Luis Mi Atienza" 
+             style="width: 100%; max-width: 600px; border-radius: 10px; box-shadow: 0 15px 45px rgba(0,0,0,0.15); border: 1px solid rgba(184, 146, 74, 0.2); display: block; margin: 0 auto;">
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.8; color: var(--slate); margin-bottom: 25px;">
+        ¡Cita confirmada! Estaré en la <strong>Feria del Libro de Talavera de la Reina (Toledo)</strong> el próximo 30 de abril. 
+        Será un placer saludarte, dedicar tu ejemplar de <em>"Bajo el Peso del Alma"</em> y compartir un rato en mi ciudad natal.
+      </p>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="chip">📍 Feria del Libro</div>
+        <div class="chip">📅 30 de Abril</div>
+        <div class="chip">✍ Firma de ejemplares</div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- ══ FOOTER ══ -->
 <footer>
   <span class="footer-name">Luis Mi Atienza</span>
