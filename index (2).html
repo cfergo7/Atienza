@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luis Mi Atienza — Escritor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* Estilo especial para la pestaña de Noticias */
+  .nav-tab.news-tab, .drawer-item.news-tab {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .news-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--rust);
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 6px;
+    box-shadow: 0 0 8px var(--rust);
+    animation: pulse-red 2s infinite;
+  }
+  @keyframes pulse-red {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 82, 42, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(192, 82, 42, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 82, 42, 0); }
+  }
+
+  /* Contenedor de noticias */
+  .news-container {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+  .news-date {
+    font-size: 11px;
+    color: var(--rust);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  :root {
+    --cream: #f5f0eb;
+    --warm-white: #fdfaf7;
+    --rust: #c0522a;
+    --rust-light: #d4693f;
+    --rust-pale: #eeddd4;
+    --slate: #4a5568;
+    --slate-light: #7a8898;
+    --charcoal: #2a2a2a;
+    --gold: #b8924a;
+    --border: rgba(192,82,42,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--warm-white);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ══ HEADER ══ */
+  .site-header {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    padding: 0 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+    height: 58px;
+  }
+  .site-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    font-style: italic;
+    flex-shrink: 0;
+  }
+  .site-logo span { color: var(--rust); }
+
+  .nav-tabs { display: flex; height: 100%; }
+  .nav-tab {
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--slate-light);
+    padding: 0 18px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border-bottom: 2.5px solid transparent;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--charcoal); }
+  .nav-tabs { display: none; }
+
+  /* Hamburger Toggle */
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--charcoal);
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+    transition: transform 0.3s;
+  }
+  .menu-toggle:hover { color: var(--rust); transform: scale(1.1); }
+
+  /* Side Drawer */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .drawer-overlay.active { display: block; opacity: 1; }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0; right: -300px;
+    width: 280px; height: 100%;
+    background: var(--warm-white);
+    z-index: 1001;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 80px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .mobile-drawer.active { right: 0; }
+  .drawer-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: var(--slate-light);
+    cursor: pointer;
+  }
+  .drawer-item {
+    background: none;
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    text-align: left;
+    color: var(--charcoal);
+    padding: 12px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s;
+  }
+  .drawer-item.active { color: var(--rust); padding-left: 10px; }
+
+  /* ══ PAGES ══ */
+  .page { display: none; }
+  .page.active { display: block; animation: pgIn 0.35s forwards; }
+  @keyframes pgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══ SHARED LAYOUT ══ */
+  .inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  .label-tag {
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--rust);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .label-tag::before { content: ''; width: 26px; height: 1px; background: var(--rust); }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .page-title em { color: var(--rust); font-style: italic; }
+
+  .page-lead {
+    font-size: 15px;
+    color: var(--slate);
+    line-height: 1.8;
+    max-width: 580px;
+    margin-bottom: 32px;
+  }
+/* ══ ESTILO PREMIUM CONTACTO ══ */
+  .contact-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+  }
+
+  .contact-card-premium {
+    background: white;
+    border: 1px solid rgba(184, 146, 74, 0.15);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.02);
+  }
+
+  /* Línea decorativa superior que aparece al pasar el ratón */
+  .contact-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    width: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--rust));
+    transition: all 0.4s ease;
+    border-radius: 0 0 10px 10px;
+  }
+
+  .contact-card-premium:hover {
+    transform: translateY(-12px);
+    border-color: var(--gold);
+    box-shadow: 0 25px 50px rgba(184, 146, 74, 0.12);
+  }
+
+  .contact-card-premium:hover::before {
+    width: 80%;
+    left: 10%;
+  }
+
+  .cp-icon-box {
+    width: 70px;
+    height: 70px;
+    background: var(--warm-white);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: var(--gold);
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 20px rgba(184, 146, 74, 0.1);
+  }
+
+  .contact-card-premium:hover .cp-icon-box {
+    background: var(--rust);
+    color: white;
+    transform: scale(1.1) rotate(10deg);
+  }
+
+  .cp-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rust);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .cp-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+
+  .cp-desc {
+    font-size: 14px;
+    color: var(--slate-light);
+    line-height: 1.6;
+    max-width: 220px;
+  }
+
+  /* Bloque WhatsApp de Lujo */
+  .premium-wa-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #fdfaf7 100%);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .premium-wa-banner::after {
+    content: 'WA';
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    font-size: 150px;
+    font-weight: 900;
+    color: rgba(37, 211, 102, 0.03);
+    pointer-events: none;
+  }
+
+  .wa-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+
+  .btn-wa-premium {
+    background: #25d366;
+    color: white;
+    text-decoration: none;
+    padding: 18px 35px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+  }
+
+  .btn-wa-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .premium-wa-banner { flex-direction: column; text-align: center; padding: 30px; }
+  }
+  /* ══════════════════════════
+     PAGE: AUTOR
+  ══════════════════════════ */
+  .autor-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 44px;
+    align-items: start;
+  }
+
+  /*  — contained, not stretched */
+  .autor-photo-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .autor-photo {
+    width: 240px;
+    height: 300px;
+    object-fit: cover;
+    object-position: center 10%;
+    display: block;
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 2px 10px rgba(0,0,0,0.08);
+  }
+
+  .rating-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--slate);
+    margin-top: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: fit-content;
+  }
+  .rating-chip .stars { color: var(--gold); }
+
+  .autor-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1.05;
+    margin-bottom: 5px;
+  }
+  .autor-name em { color: var(--rust); font-style: italic; }
+
+  .autor-role {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate-light);
+    margin-bottom: 22px;
+  }
+
+  .divider { width: 40px; height: 1.5px; background: var(--rust); opacity: 0.35; margin-bottom: 20px; }
+
+  .bio-text { font-size: 15px; color: var(--slate); line-height: 1.82; margin-bottom: 16px; }
+  .bio-text strong { color: var(--charcoal); font-weight: 500; }
+  .bio-text em { color: var(--rust); }
+
+  .bio-quote {
+    border-left: 2px solid var(--rust);
+    padding-left: 18px;
+    margin: 20px 0;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--charcoal);
+    line-height: 1.6;
+  }
+
+  .info-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .chip {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Social icons — glass/glow */
+  .social-row { display: flex; gap: 12px; align-items: flex-start; }
+  .social-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .s-icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+  }
+  .s-icon::before { content: ''; position: absolute; inset: 0; border-radius: 11px; border: 1px solid rgba(255,255,255,0.35); z-index: 2; }
+  .s-icon::after { content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 42%; border-radius: 10px 10px 50% 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); z-index: 3; pointer-events: none; }
+  .si-fb { background: linear-gradient(145deg, #7098e0, #3b5998); box-shadow: 0 4px 12px rgba(59,89,152,0.3); }
+  .si-ig { background: linear-gradient(145deg, #fabd58, #e04080, #a020a0); box-shadow: 0 4px 12px rgba(193,53,132,0.3); }
+  .si-wa { background: linear-gradient(145deg, #52e880, #1fba57, #0e8038); box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
+  .social-link:hover .si-fb { transform: translateY(-3px) scale(1.07); box-shadow: 0 7px 20px rgba(59,89,152,0.5), 0 0 12px rgba(59,89,152,0.2); }
+  .social-link:hover .si-ig { transform: translateY(-3px) scale(1.07); box-shadow: 0 7px 20px rgba(193,53,132,0.5), 0 0 12px rgba(225,80,140,0.2); }
+  .social-link:hover .si-wa { transform: translateY(-3px) scale(1.07); box-shadow: 0 7px 20px rgba(37,211,102,0.5), 0 0 12px rgba(37,211,102,0.2); }
+  .s-icon svg { position: relative; z-index: 4; }
+  .s-label { font-size: 10px; color: var(--slate-light); font-weight: 500; }
+
+  /* ══════════════════════════
+     PAGE: LIBRO
+  ══════════════════════════ */
+  .libro-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 44px;
+    align-items: start;
+  }
+
+  .book-card {
+    background: linear-gradient(155deg, #c0522a 0%, #7a2010 45%, #1a1010 100%);
+    border-radius: 5px;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 320px;
+    box-shadow: -8px 12px 32px rgba(0,0,0,0.18), 2px 3px 10px rgba(0,0,0,0.1);
+    transform: perspective(900px) rotateY(-4deg) rotateX(1deg);
+    transition: transform 0.5s;
+  }
+  .book-card:hover { transform: perspective(900px) rotateY(-1deg) rotateX(0); }
+  .bc-author { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .bc-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: white; font-style: italic; font-weight: 700; line-height: 1.15; margin-top: 10px; }
+  .bc-stars { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 8px; }
+  .bc-isbn { font-size: 9.5px; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; margin-top: 12px; letter-spacing: 0.08em; }
+
+  .book-h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 2.5vw, 2.2rem); font-weight: 700; color: var(--charcoal); line-height: 1.15; margin-bottom: 18px; }
+  .book-h2 em { color: var(--rust); font-style: italic; }
+
+  .synopsis { font-size: 14.5px; color: var(--slate); line-height: 1.85; }
+  .synopsis p + p { margin-top: 12px; }
+  .synopsis strong { color: var(--charcoal); font-weight: 500; }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: var(--cream);
+    border-radius: 6px;
+    padding: 18px;
+    margin: 20px 0;
+  }
+  .sp-l { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate-light); margin-bottom: 2px; }
+  .sp-v { font-size: 13px; color: var(--charcoal); font-weight: 500; }
+
+  .cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn-p {
+    background: var(--rust); color: white; text-decoration: none;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    padding: 12px 22px; border-radius: 3px;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: all 0.28s; border: none; cursor: pointer;
+    box-shadow: 0 3px 12px rgba(192,82,42,0.22);
+  }
+  .btn-p:hover { background: var(--rust-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(192,82,42,0.32); }
+
+  .btn-s:hover { border-color: var(--rust); color: var(--rust); }
+
+  /* ══ BOOK SUB-TABS ══ */
+  .book-tabs-nav {
+    display: flex;
+    gap: 30px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 25px;
+    margin-top: 30px;
+  }
+  .book-tab-btn {
+    background: none;
+    border: none;
+    padding-bottom: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-light);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .book-tab-btn:hover { color: var(--charcoal); }
+  .book-tab-btn.active { color: var(--rust); }
+  .book-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--rust);
+  }
+
+  .book-tab-content { display: none; }
+  .book-tab-content.active { display: block; animation: fadeIn 0.4s forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══ REVIEWS ══ */
+  .review-item {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .review-author { font-size: 13px; font-weight: 600; color: var(--charcoal); }
+  .review-stars { color: var(--gold); font-size: 12px; }
+  .review-text { font-size: 14px; color: var(--slate); font-style: italic; line-height: 1.6; }
+
+  /* ══ DETAILS GRID ══ */
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    background: var(--cream);
+    padding: 24px;
+    border-radius: 12px;
+  }
+  .detail-box .d-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rust); margin-bottom: 4px; font-weight: 700; }
+  .detail-box .d-value { font-size: 14px; color: var(--charcoal); font-weight: 500; }
+
+  /* ══════════════════════════
+     PAGE: PROYECTOS
+  ══════════════════════════ */
+  .proj-cards { display: flex; flex-direction: column; gap: 14px; }
+  .proj-card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 7px;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 18px;
+    align-items: start;
+    transition: all 0.28s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .proj-card:hover { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(0,0,0,0.07); border-color: var(--border); }
+  .proj-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .proj-status {
+    font-size: 9.5px; letter-spacing: 0.24em; text-transform: uppercase;
+    font-weight: 600; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .proj-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: dotpulse 2s infinite; }
+  @keyframes dotpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .proj-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--charcoal); margin-bottom: 7px; }
+  .proj-desc { font-size: 14px; color: var(--slate); line-height: 1.75; }
+
+  /* ══════════════════════════
+     PAGE: CONTACTO
+  ══════════════════════════ */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .contact-card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 8px;
+    padding: 22px 24px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.28s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--rust);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .contact-card:hover { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(0,0,0,0.08); }
+  .contact-card:hover::after { transform: scaleX(1); }
+  .cc-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+  .cc-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rust); font-weight: 600; margin-bottom: 4px; }
+  .cc-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--charcoal); margin-bottom: 5px; }
+  .cc-desc { font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+  .wa-block {
+    background: linear-gradient(135deg, #f0faf4, #e3f7eb);
+    border: 1px solid rgba(37,211,102,0.2);
+    border-radius: 10px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .wa-block-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--charcoal); margin-bottom: 5px; }
+  .wa-block-desc { font-size: 13.5px; color: var(--slate); }
+  .btn-wa {
+    background: #25d366; color: white; text-decoration: none;
+    font-size: 12px; font-weight: 600;
+    padding: 13px 22px; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 8px;
+    white-space: nowrap; transition: all 0.28s;
+    box-shadow: 0 4px 12px rgba(37,211,102,0.28);
+    flex-shrink: 0;
+  }
+  .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.4); }
+<div id="page-noticias" class="page">
+  <div class="inner">
+    <div class="label-tag">Actualidad</div>
+    <h2 class="page-title">Últimas <em>Noticias</em></h2>
+    <div id="page-noticias" class="page">
+  <div class="inner">
+    <div class="label-tag">Actualidad · Agenda</div>
+    <h2 class="page-title">Últimas <em>Noticias</em></h2>
+    <p class="page-lead">Sigue de cerca los próximos encuentros y novedades de <strong>Luis Mi Atienza</strong>.</p>
+
+    <div class="news-container" style="margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 40px;">
+      <div class="news-date">Próxima Cita · 7 de Mayo</div>
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--charcoal); margin: 15px 0;">
+        Presentación y Firma de Libros en Cuenca
+      </h3>
+      
+      <div style="margin-bottom: 25px; text-align: center;">
+        <img src="1775861053933.jpg" alt="Presentación Cuenca Luis Mi Atienza" 
+             style="width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border);">
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.7; color: var(--slate); margin-bottom: 20px;">
+        Tengo la alegría de anunciar un nuevo encuentro con lectores en la ciudad de Cuenca. Estaré presentando mi obra, compartiendo detalles del proceso de eescritura y firmando ejemplares. ¡Será un placer veros allí!
+      </p>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        <div class="chip">📍 Cuenca</div>
+        <div class="chip">📅 7 de Mayo</div>
+        <div class="chip">✍ Presentación y Firma</div>
+      </div>
+
+      <a href="https://wa.me/34633127535?text=Hola%20Luis%20Mi%2C%20quer%C3%ADa%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20evento%20en%20Cuenca%20del%207%20de%20mayo" 
+         target="_blank" class="btn-p" style="padding: 12px 25px;">MÁS INFORMACIÓN</a>
+    </div>
+    <div class="news-container">
+      <div class="news-date">Próximo Evento · 30 de Abril</div>
+      <h3 class="proj-name" style="margin-top:10px;">Gran firma de libros en Talavera de la Reina</h3>
+      
+      <div style="margin: 25px 0; text-align: center;">
+        <img src="1775733603026.JPG" alt="Evento Luis Mi Atienza" 
+             style="width: 100%; max-width: 550px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border);">
+      </div>
+
+      <p class="proj-desc">
+        ¡Ya es oficial! Estaremos en la <strong>Feria del Libro de Talavera (Toledo)</strong>. 
+        Será una oportunidad única para conseguir tu ejemplar de <em>"Bajo el Peso del Alma"</em> dedicado y charlar en persona. 
+        ¡No faltéis a la cita el 30 de abril!
+      </p>
+      
+      <div style="margin-top: 20px;">
+        <a href="https://wa.me/34633127535?text=Hola%20Luis%20Mi%2C%20quer%C3%ADa%20m%C3%A1s%20info%20sobre%20la%20firma" target="_blank" class="btn-s" style="padding: 8px 15px; font-size: 11px;">MÁS INFORMACIÓN</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  /* ══ FOOTER ══ */
+  footer {
+    background: var(--charcoal);
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 28px 20px;
+    font-size: 12px;
+  }
+  footer a { color: rgba(255,255,255,0.5); text-decoration: none; margin: 0 10px; transition: color 0.25s; }
+  footer a:hover { color: var(--rust-light); }
+  .footer-name { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: rgba(255,255,255,0.7); display: block; margin-bottom: 10px; }
+
+  /* ══ RESPONSIVE ══ */
+  @media (max-width: 760px) {
+    .inner { padding: 36px 18px; }
+    .autor-grid, .libro-grid { grid-template-columns: 1fr; }
+    .autor-photo { width: 180px; height: 225px; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .wa-block { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ══ ICONS PREMIUM CONTACTO ══ */
+  .cp-email   { background: linear-gradient(145deg, #fdba74, #ea580c) !important; box-shadow: 0 6px 20px rgba(234,88,12,0.35) !important; }
+  .cp-ig      { background: transparent !important; box-shadow: 0 6px 20px rgba(193,53,132,0.35) !important; padding: 0 !important; overflow: hidden !important; border-radius: 22px !important; }
+  .cp-tt      { background: transparent !important; box-shadow: 0 6px 20px rgba(0,0,0,0.35) !important; padding: 0 !important; overflow: hidden !important; border-radius: 22px !important; }
+  .cp-fb      { background: transparent !important; box-shadow: 0 6px 20px rgba(59,89,152,0.35) !important; padding: 0 !important; overflow: hidden !important; border-radius: 22px !important; }
+  .cp-phone   { background: transparent !important; box-shadow: 0 6px 20px rgba(22,163,74,0.35) !important; padding: 0 !important; overflow: hidden !important; border-radius: 22px !important; }
+  .cp-amazon  { background: transparent !important; box-shadow: 0 6px 20px rgba(255,153,0,0.35) !important; padding: 0 !important; overflow: hidden !important; border-radius: 22px !important; }
+
+  .contact-card-premium:hover .cp-email  { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(234,88,12,0.55) !important; }
+  .contact-card-premium:hover .cp-ig     { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(193,53,132,0.55) !important; }
+  .contact-card-premium:hover .cp-tt     { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(100,100,100,0.45) !important; }
+  .contact-card-premium:hover .cp-fb     { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(59,89,152,0.55) !important; }
+  .contact-card-premium:hover .cp-phone  { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(22,163,74,0.55) !important; }
+  .contact-card-premium:hover .cp-amazon { transform: scale(1.12) rotate(5deg) !important; box-shadow: 0 10px 30px rgba(255,153,0,0.55) !important; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <div class="site-logo">Luis Mi <span>Atienza</span></div>
+  <nav class="nav-tabs">
+<button class="nav-tab" onclick="go('noticias',this)" style="color:var(--gold); font-weight:700;">Últimas Noticias</button>
+
+    <button class="nav-tab active" onclick="go('autor',this)">El Autor</button>
+    <button class="nav-tab" onclick="go('libro',this)">El Libro</button>
+    <button class="nav-tab" onclick="go('proyectos',this)">Futuros Proyectos</button>
+    <button class="nav-tab" onclick="go('contacto',this)">Contacto</button>
+  </nav>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+</header>
+
+<!-- Mobile Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+
+<button class="drawer-item news-tab" onclick="go('noticias',this)">Últimas Noticias <span class="news-dot"></span></button>
+  <button class="drawer-close" onclick="toggleMenu()">&times;</button>
+  <button class="drawer-item active" onclick="go('autor',this)">El Autor</button>
+  <button class="drawer-item" onclick="go('libro',this)">El Libro</button>
+  <button class="drawer-item" onclick="go('proyectos',this)">Futuros Proyectos</button>
+  <button class="drawer-item" onclick="go('contacto',this)">Contacto</button>
+</div>
+
+<!-- ════════════ AUTOR ════════════ -->
+<div id="page-autor" class="page active">
+  <div class="inner">
+    <div class="autor-grid">
+
+      <!-- Foto contenida -->
+      <div class="autor-photo-wrap">
+        <img src="IMG_20260406_132624.jpg" alt="Luis Mi Atienza" class="autor-photo">
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <div class="label-tag">Escritor · Talavera de la Reina</div>
+        <h1 class="autor-name">Luis Mi<br><em>Atienza</em></h1>
+        <div class="autor-role">Escritor · Narrador · Apasionado de las historias</div>
+        <div class="divider"></div>
+
+
+
+        <p class="bio-text">
+          <strong>Luis Miguel Atienza</strong> es un escritor español de
+          <strong>Talavera de la Reina</strong>, una ciudad que ha marcado su carácter
+          y su mirada sobre el mundo. Con un entusiasmo desbordante por las historias
+          que tocan la piel, llegó a la escritura no como profesión sino como
+          <em>necesidad</em> — una manera honesta de conectar con las personas.
+        </p>
+        <p class="bio-text">
+          Su literatura nace de las sombras de lo humano: personajes rotos,
+          decisiones difíciles y segundas oportunidades. Escribe para quienes
+          jamás se consideraron lectores y para quienes no pueden dejar de serlo.
+        </p>
+
+        <div class="bio-quote">
+          "Escribo porque creo que las historias pueden recordarle a alguien que no está solo."
+        </div>
+
+        <div class="info-chips">
+          <div class="chip">📍 Talavera de la Reina</div>
+          <div class="chip">📚 1ª novela publicada</div>
+          <div class="chip">✍ Ejemplares firmados disponibles</div>
+        </div>
+
+        <div class="social-row">
+          <a href="https://www.facebook.com/share/1CZ4DsZvGC/" target="_blank" class="social-link">
+            <div class="s-icon si-fb">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="position:relative;z-index:4">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+            <span class="s-label">Facebook</span>
+          </a>
+          <a href="https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh" target="_blank" class="social-link">
+            <div class="s-icon si-ig">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:4">
+                <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" stroke-width="2.2" fill="none"/>
+                <circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="2.2" fill="none"/>
+                <circle cx="17.5" cy="6.5" r="1.4" fill="white"/>
+              </svg>
+            </div>
+            <span class="s-label">Instagram</span>
+          </a>
+          <a href="https://wa.me/34633127535" target="_blank" class="social-link">
+            <div class="s-icon si-wa">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="position:relative;z-index:4">
+                <path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.19-1.62A11.93 11.93 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52zM12 22c-1.84 0-3.65-.5-5.22-1.44l-.37-.22-3.88 1.02 1.04-3.78-.24-.39A9.93 9.93 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.47-7.28c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.78-1.68-2.08-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.91-2.2-.24-.57-.49-.49-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.1 4.49.71.31 1.27.5 1.7.64.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.08-.12-.28-.2-.58-.35z"/>
+              </svg>
+            </div>
+            <span class="s-label">WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LIBRO ════════════ -->
+<div id="page-libro" class="page">
+  <div class="inner">
+    <div class="libro-grid">
+     <div class="book-photo-wrap" style="perspective: 1000px;">
+  <img src="61PaTieT2ML.jpg" alt="Portada del libro" 
+       style="width: 100%; 
+              border-radius: 2px 5px 5px 2px; 
+              box-shadow: -10px 10px 30px rgba(0,0,0,0.3);
+              transform: rotateY(-10deg);
+              border-left: 4px solid rgba(0,0,0,0.1);">
+</div>
+
+      <div>
+        <div class="label-tag">Primera Novela · 2024</div>
+        <h2 class="book-h2">Bajo el Peso<br><em>del Alma</em></h2>
+
+        <!-- BOOK TABS NAV -->
+        <div class="book-tabs-nav">
+          <button class="book-tab-btn active" onclick="switchBookTab('synopsis', this)">Sinopsis</button>
+          <button class="book-tab-btn" onclick="switchBookTab('details', this)">Detalles</button>
+          <button class="book-tab-btn" onclick="switchBookTab('reviews', this)">Opiniones</button>
+        </div>
+
+        <!-- TAB: SYNOPSIS -->
+        <div id="book-synopsis" class="book-tab-content active">
+          <div class="synopsis">
+            <p>Bajo el peso del alma
+¿Hasta dónde serías capaz de llegar para cumplir tus sueños cuando el camino se convierte en una tortura?
+
+Claudia no llegó al turbio local de Óptima buscando el pecado, sino una salida. Joven, inocente y con una mirada negra capaz de inquietar a cualquiera, pronto descubre que en ese mundo la compasión es un lujo inexistente. Bajo la estricta y cruel jerarquía de Pilar, la veterana que custodia el "caviar" para sí misma, Claudia es empujada a los brazos de "El Inquisidor", un hombre despiadado que disfruta quebrando la voluntad de las almas nuevas.
+
+Tras ser humillada y llevada al límite de sus fuerzas, Claudia comprende que para sobrevivir debe dejar de ser la víctima. Con la ayuda de Maika, conocida como la "princesa de ébano", y el consumo de una peligrosa sustancia que la desconecta del dolor, Claudia renace bajo una nueva y temible identidad: Demona.
+
+Sin embargo, el precio de la venganza y el éxito es alto. Mientras su fama crece entre los proxenetas y el dinero comienza a acumularse, Claudia se pierde en una espiral de adicción y oscuridad que amenaza con devorar lo poco que queda de su esencia original.
+
+En paralelo conocemos a Ezra, un soñador eterno y leal, cuya vida está a punto de colisionar con este mundo de sombras. ¿Podrá Claudia recuperar su alma antes de que el peso de sus decisiones la hunda para siempre? ¿Es posible volver a ser una "chica normal" después de haber sido un demonio?.
+
+"Bajo el peso del alma" es una historia cruda y visceral sobre la pérdida de la inocencia, la sororidad en los lugares más inesperados y la lucha desesperada por redimirse en un mundo que solo sabe cobrar deudas de sangre y espíritu.
+
+Advertencia: Esta obra contiene escenas de violencia y temas adultos que pueden herir la sensibilidad del lector.
+
+En esta historia encontrarás:
+
+Un ritmo implacable: Una trama directa, sin rodeos, diseñada para leerse de un tirón.
+
+Personajes inolvidables: La lucha interna de Claudia y Ezra contra los fantasmas de su propia historia.
+
+Atmósfera "Noir" pura: El peso de la culpa, la suciedad del destino y la búsqueda de una última luz..</p>
+          </div>
+        </div>
+
+        <!-- TAB: DETAILS -->
+        <div id="book-details" class="book-tab-content">
+          <div class="details-grid">
+            <div class="detail-box"><div class="d-label">Editorial</div><div class="d-value">Independently published</div></div>
+            <div class="detail-box"><div class="d-label">Fecha</div><div class="d-value">13 de febrero de 2026</div></div>
+            <div class="detail-box"><div class="d-label">Páginas</div><div class="d-value">475 (Tapa dura)</div></div>
+            <div class="detail-box"><div class="d-label">ISBN-13</div><div class="d-value">979-8248224067</div></div>
+            <div class="detail-box"><div class="d-label">Idioma</div><div class="d-value">Español</div></div>
+            <div class="detail-box"><div class="d-label">Formatos</div><div class="d-value">Tapa Dura · Kindle</div></div>
+          </div>
+        </div>
+
+        <!-- TAB: REVIEWS -->
+        <div id="book-reviews" class="book-tab-content">
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-author">Fernando E.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">"Una gran historia de amor, odio y superación que te engancha desde el principio y no te suelta hasta la última página!!!! Gran novela."</p>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-author">Alberto</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">"He sufrido muchísimo con este libro, pero a la vez he vivido enganchada a él... una mezcla entre tristeza, horror y esperanza difícil de describir."</p>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-author">Esmeralda M.</span>
+              <span class="review-stars">★★★★★</span>
+            </div>
+            <p class="review-text">"Un descenso brutal a la oscuridad que duele… pero no puedes dejar de leer. Te remueve por dentro."</p>
+          </div>
+          <div style="margin-top:20px; font-size:12px; color:var(--slate-light);">Valoración media: ★ 4,6 / 5 (Amazon.es)</div>
+        </div>
+
+        <div class="cta-row" style="margin-top:35px;">
+          <a href="https://www.amazon.es/dp/B0GNKJXV78" target="_blank" class="btn-p">🛒 Comprar en Amazon</a>
+          <a href="https://wa.me/34633127535?text=Hola%2C%20quiero%20un%20ejemplar%20firmado" target="_blank" class="btn-s">✍ Ejemplar Firmado</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PROYECTOS ════════════ -->
+<div id="page-proyectos" class="page">
+  <div class="inner">
+    <div class="label-tag">Lo que viene</div>
+    <h2 class="page-title">Futuros <em>Proyectos</em></h2>
+    <div class="page-lead">
+      <p><em>Bajo el peso del alma</em> fue solo el principio. <strong>Luis Mi Atienza</strong> sigue escribiendo porque para él las palabras no son un trabajo, son su forma de respirar.</p>
+    </div>
+    <div class="proj-cards">
+      <div class="proj-card">
+        <div class="proj-num" style="color: var(--rust); opacity: 0.2;">01</div>
+        <div>
+          <div class="proj-status" style="color: var(--rust);">En desarrollo</div>
+          <h3 class="proj-name">Segunda novela — En creación</h3>
+          <p class="proj-desc">Luis Mi trabaja actualmente en su segunda obra. Siguiendo la línea de su debut —cruda, visceral y humana—, la historia promete personajes intensos.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num" style="color: var(--gold); opacity: 0.3;">02</div>
+        <div>
+          <div class="proj-status" style="color: var(--gold);">Vocación</div>
+          <h3 class="proj-name">Escribir para la gente</h3>
+          <p class="proj-desc">Su aspiración es que alguien que jamás se consideró lector no pueda dejar de pasar páginas. Escribir desde la calle para la gente.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num" style="color: var(--slate-light); opacity: 0.2;">03</div>
+        <div>
+          <div class="proj-status" style="color: var(--slate-light);">Cercanía</div>
+          <h3 class="proj-name">Charlas en Bibliotecas</h3>
+          <p class="proj-desc">Pequeños encuentros en bibliotecas de barrio y librerías locales para compartir la pasión por la lectura con quien quiera escuchar.</p>
+        </div>
+      </div>
+      <div class="proj-card">
+        <div class="proj-num" style="color: var(--slate-light); opacity: 0.2;">04</div>
+        <div>
+          <div class="proj-status" style="color: var(--slate-light);">Constancia</div>
+          <h3 class="proj-name">Seguir escribiendo</h3>
+          <p class="proj-desc">Sin más pretensión que la de no dejar morir las historias. Seguir aprendiendo, tachando y volviendo a intentar cada día.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-contacto" class="page">
+  <div class="inner">
+    <div class="label-tag">Contacto</div>
+    <h2 class="page-title">Hablemos de tu <em>próxima lectura</em></h2>
+
+    <div class="contact-grid-premium">
+
+      <!-- EMAIL -->
+      <a href="mailto:latiper07@gmail.com" class="contact-card-premium">
+        <div class="cp-icon-box cp-email">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="emailGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="100%" stop-color="#c0522a"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="4" width="20" height="16" rx="3" fill="url(#emailGrad)"/>
+            <path d="M2 7l10 7 10-7" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="cp-label">Email</div>
+        <h3 class="cp-title">Correo Directo</h3>
+        <p class="cp-desc">latiper07@gmail.com</p>
+      </a>
+
+      <!-- INSTAGRAM -->
+      <a href="https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh" target="_blank" class="contact-card-premium" onclick="openApp('instagram://user?username=poetaratoslibres','https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh');return false;">
+        <div class="cp-icon-box cp-ig">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stop-color="#f09433"/>
+                <stop offset="25%" stop-color="#e6683c"/>
+                <stop offset="50%" stop-color="#dc2743"/>
+                <stop offset="75%" stop-color="#cc2366"/>
+                <stop offset="100%" stop-color="#bc1888"/>
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igGrad)"/>
+            <rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+            <circle cx="12" cy="12" r="4.2" stroke="white" stroke-width="1.8" fill="none"/>
+            <circle cx="17.2" cy="6.8" r="1.2" fill="white"/>
+            <path d="M6 2 Q2 2 2 6" stroke="rgba(255,255,255,0.3)" stroke-width="0.5" fill="none"/>
+          </svg>
+        </div>
+        <div class="cp-label">Instagram</div>
+        <h3 class="cp-title">@poetaratoslibres</h3>
+        <p class="cp-desc">Sigue mi proceso de escritura día a día.</p>
+      </a>
+
+      <!-- TIKTOK -->
+      <a href="https://www.tiktok.com/@luismiguelatienza" target="_blank" class="contact-card-premium" onclick="openApp('snssdk1233://user/profile/6775860887988487174','https://www.tiktok.com/@luismiguelatienza');return false;">
+        <div class="cp-icon-box cp-tt">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ttGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#010101"/>
+                <stop offset="100%" stop-color="#1a1a2e"/>
+              </linearGradient>
+            </defs>
+            <rect width="24" height="24" rx="6" fill="url(#ttGrad)"/>
+            <path d="M17 6.5c-1.2-.2-2.1-1-2.4-2.1h-1.8v9.7c0 1-.8 1.8-1.8 1.8s-1.8-.8-1.8-1.8.8-1.8 1.8-1.8c.2 0 .4 0 .6.1V10.5c-.2 0-.4-.1-.6-.1-2 0-3.6 1.6-3.6 3.6s1.6 3.6 3.6 3.6 3.6-1.6 3.6-3.6V9.7c.7.5 1.5.8 2.4.9V8.8c-.5-.1-.9-.3-1.2-.5.4.1.8.2 1.2.2z" fill="#fe2c55"/>
+            <path d="M16.2 7c-.4-.2-.7-.6-.9-1H13.5v9.7c0 1-.8 1.8-1.8 1.8s-1.8-.8-1.8-1.8.8-1.8 1.8-1.8h.3V12.7c-1.7.2-3 1.6-3 3.3 0 1.8 1.5 3.3 3.3 3.3s3.3-1.5 3.3-3.3V9.4c.6.3 1.3.5 2 .5V8.2c-.8-.2-1.5-.6-1.4-1.2z" fill="white"/>
+            <path d="M17.2 6.2C17.6 7 18.3 7.6 19.2 7.8v1.7c-.9-.1-1.7-.4-2.4-.9v4.4c0 2-1.6 3.6-3.6 3.6s-3.6-1.6-3.6-3.6 1.6-3.6 3.6-3.6c.2 0 .4 0 .6.1v1.8c-.2-.1-.4-.1-.6-.1-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8 1.8-.8 1.8-1.8V4.4h1.8c.2 1.1 1.1 1.9 2.2 2.1v1.6c-.8-.1-1.5-.4-2-.8v.7c0 .1 0 .2.2.2z" fill="#69c9d0"/>
+          </svg>
+        </div>
+        <div class="cp-label">TikTok</div>
+        <h3 class="cp-title">@luismiguelatienza</h3>
+        <p class="cp-desc">Vídeos, reflexiones y novedades literarias.</p>
+      </a>
+
+      <!-- FACEBOOK -->
+      <a href="https://www.facebook.com/share/1CZ4DsZvGC/" target="_blank" class="contact-card-premium">
+        <div class="cp-icon-box cp-fb">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="fbGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6490e2"/>
+                <stop offset="100%" stop-color="#3b5998"/>
+              </linearGradient>
+            </defs>
+            <rect width="24" height="24" rx="6" fill="url(#fbGrad)"/>
+            <path d="M16 8h-2a1 1 0 0 0-1 1v2h3l-.5 3H13v7h-3v-7H8v-3h2V9a4 4 0 0 1 4-4h2v3z" fill="white"/>
+          </svg>
+        </div>
+        <div class="cp-label">Facebook</div>
+        <h3 class="cp-title">Luis Miguel Atienza</h3>
+        <p class="cp-desc">Noticias y actualizaciones de proyectos.</p>
+      </a>
+
+
+      <!-- AMAZON -->
+      <a href="https://www.amazon.es/dp/B0GNKJXV78?ref=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&ref_=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&social_share=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&bestFormat=true" target="_blank" class="contact-card-premium">
+        <div class="cp-icon-box cp-amazon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="amzGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffb347"/>
+                <stop offset="100%" stop-color="#ff9900"/>
+              </linearGradient>
+            </defs>
+            <rect width="24" height="24" rx="6" fill="url(#amzGrad)"/>
+            <text x="12" y="16" text-anchor="middle" font-size="13" font-weight="900" fill="#131921" font-family="serif">a</text>
+            <path d="M6 17.5 Q12 20 18 17.5" stroke="#131921" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M17 16 l2 1.5-1 2" stroke="#131921" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="cp-label">Amazon</div>
+        <h3 class="cp-title">Comprar el libro</h3>
+        <p class="cp-desc">Kindle, tapa blanda y tapa dura.</p>
+      </a>
+
+    </div>
+
+    <!-- UN solo bloque WhatsApp destacado -->
+    <div class="premium-wa-banner">
+      <div class="wa-content">
+        <div class="cp-label" style="color:#25d366; margin-bottom:8px;">Respuesta Inmediata</div>
+        <h3>¿Quieres un libro firmado?</h3>
+        <p class="wa-block-desc">Escríbeme por WhatsApp y gestionamos tu ejemplar dedicado personalmente.</p>
+      </div>
+      <a href="https://wa.me/34633127535?text=Hola%20Luis%20Mi%2C%20me%20gustar%C3%ADa%20un%20ejemplar%20firmado" target="_blank" class="btn-wa-premium">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+        </svg>
+        Escríbeme por WhatsApp
+      </a>
+    </div>
+
+  </div>
+</div>
+<footer style="background: var(--charcoal); color: rgba(255,255,255,0.6); text-align: center; padding: 60px 20px 40px 20px; font-size: 13px; border-top: 4px solid var(--rust);">
+  
+  <div style="max-width: 700px; margin: 0 auto;">
+    <div class="label-tag" style="justify-content: center; margin-bottom: 15px; color: var(--gold);">
+      Próximo Evento · 30 de Abril
+    </div>
+    
+    <h2 class="page-title" style="color: white; margin-bottom: 15px; font-size: 1.8rem;">
+      Presentación y Firma en <em>Talavera de la Reina</em>
+    </h2>
+
+    <p style="line-height: 1.8; margin-bottom: 25px; color: rgba(255,255,255,0.5);">
+      Nos vemos el próximo <strong>30 de abril</strong> en la <strong>Feria del Libro de Talavera (Toledo)</strong>. Estaré firmando ejemplares de <em>"Bajo el Peso del Alma"</em> y compartiendo un rato con todos los lectores en mi ciudad natal.
+    </p>
+
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">📍 Feria del Libro (Talavera)</div>
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">🗓 30 de Abril</div>
+      <div class="chip" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: white;">✍ Firma de ejemplares</div>
+    </div>
+
+    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;">
+      <span class="footer-name">Luis Mi Atienza</span>
+      <div style="margin-bottom:15px;">
+        <a href="https://www.facebook.com/share/1CZ4DsZvGC/" target="_blank">Facebook</a>
+        <a href="https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh" target="_blank">Instagram</a>
+        <a href="https://wa.me/34633127535" target="_blank">WhatsApp</a>
+      </div>
+      <div style="font-size: 11px; opacity: 0.5;">© 2026 Luis Mi Atienza · Talavera de la Reina (Toledo)</div>
+    </div>
+  </div>
+</footer>
+<div id="page-noticias" class="page">
+  <div class="inner">
+    <div class="label-tag">Actualidad · Agenda</div>
+    <h2 class="page-title">Últimas <em>Noticias</em></h2>
+    <p class="page-lead">Sigue de cerca los eventos y novedades de <strong>Luis Mi Atienza</strong>.</p>
+
+    <div style="background: white; border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 30px;">
+      <div style="color: var(--rust); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;">Próxima Cita · 7 de Mayo</div>
+      
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--charcoal); margin-bottom: 25px;">Presentación y Firma de Libros en Cuenca</h3>
+
+      <div style="margin-bottom: 30px; text-align: center;">
+        <img src="1775861053933.jpg" alt="Evento Cuenca Luis Mi Atienza" 
+             style="width: 100%; max-width: 600px; border-radius: 10px; box-shadow: 0 15px 45px rgba(0,0,0,0.15); border: 1px solid rgba(184, 146, 74, 0.2); display: block; margin: 0 auto;">
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.8; color: var(--slate); margin-bottom: 25px;">
+        ¡Nueva fecha confirmada! Tendré el placer de estar en <strong>Cuenca</strong> el próximo 7 de mayo para la presentación oficial y firma de ejemplares. Un encuentro especial para compartir confidencias sobre el proceso creativo y literatura.
+      </p>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="chip">📍 Cuenca</div>
+        <div class="chip">📅 7 de Mayo</div>
+        <div class="chip">✍ Presentación y Firma</div>
+      </div>
+    </div>
+
+    <div style="background: white; border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+      <div style="color: var(--rust); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;">Evento · 30 de Abril</div>
+      
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--charcoal); margin-bottom: 25px;">Feria del Libro en Talavera de la Reina</h3>
+
+      <div style="margin-bottom: 30px; text-align: center;">
+        <img src="1775733603026.JPG" alt="Evento Talavera Luis Mi Atienza" 
+             style="width: 100%; max-width: 600px; border-radius: 10px; box-shadow: 0 15px 45px rgba(0,0,0,0.15); border: 1px solid rgba(184, 146, 74, 0.2); display: block; margin: 0 auto;">
+      </div>
+
+      <p style="font-size: 15px; line-height: 1.8; color: var(--slate); margin-bottom: 25px;">
+        Estaré en la <strong>Feria del Libro de Talavera de la Reina (Toledo)</strong> el próximo 30 de abril. Será un placer saludarte, dedicar tu ejemplar de <em>"Bajo el Peso del Alma"</em> y compartir un rato en mi ciudad natal.
+      </p>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="chip">📍 Feria del Libro</div>
+        <div class="chip">📅 30 de Abril</div>
+        <div class="chip">✍ Firma de ejemplares</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══ FOOTER ══ -->
+<footer>
+  <span class="footer-name">Luis Mi Atienza</span>
+  <div style="margin-bottom:10px;">
+    <a href="https://www.amazon.es/dp/B0GNKJXV78?ref=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&ref_=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&social_share=cm_sw_r_ffobk_cso_fb_apan_dp_7VP49WGARD21TTM8TMR0&bestFormat=true" target="_blank">Amazon</a>
+    <a href="https://www.facebook.com/share/1CZ4DsZvGC/" target="_blank">Facebook</a>
+    <a href="https://www.instagram.com/poetaratoslibres?igsh=cHU4bWx6ODJzeGxh" target="_blank">Instagram</a>
+    <a href="https://wa.me/34633127535" target="_blank">WhatsApp</a>
+  </div>
+  <div>© 2025 Luis Mi Atienza · <em>Bajo el Peso del Alma</em></div>
+</footer>
+
+<script>
+function openApp(appUrl, webUrl) {
+  var start = Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = appUrl;
+  document.body.appendChild(iframe);
+  setTimeout(function() {
+    if (document.body.contains(iframe)) {
+      document.body.removeChild(iframe);
+    }
+    if (Date.now() - start < 2000) {
+      window.open(webUrl, '_blank');
+    }
+  }, 1200);
+}
+
+function toggleMenu() {
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  drawer.classList.toggle('active');
+  overlay.classList.toggle('active');
+}
+
+function go(id, btn) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Deactivate all navigation buttons (desktop and mobile)
+  document.querySelectorAll('.nav-tab, .drawer-item').forEach(b => b.classList.remove('active'));
+  
+  // Show target page
+  const targetPage = document.getElementById('page-' + id);
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+  
+  // Activate clicked button and its counterpart
+  // (if you click "Autor" in mobile, we also activate "Autor" in desktop for consistency)
+  const allRelatedButtons = document.querySelectorAll(`[onclick*="go('${id}'"]`);
+  allRelatedButtons.forEach(b => b.classList.add('active'));
+  
+  // Close mobile menu if it's open
+  const drawer = document.getElementById('mobile-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  if (drawer.classList.contains('active')) {
+    drawer.classList.remove('active');
+    overlay.classList.remove('active');
+  }
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchBookTab(tabId, btn) {
+  // Hide all book tab contents
+  document.querySelectorAll('.book-tab-content').forEach(c => c.classList.remove('active'));
+  // Deactivate all book tab buttons
+  document.querySelectorAll('.book-tab-btn').forEach(b => b.classList.remove('active'));
+  
+  // Show target content
+  document.getElementById('book-' + tabId).classList.add('active');
+  // Activate button
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
